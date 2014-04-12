@@ -33,10 +33,25 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Qiita Recent Posts";
-
+    [self initializeRefreshControl];
     self.tableView.dataSource = self.itemStore;
+    [self refresh];
+}
+
+#pragma mark - Internal Methods
+
+- (void)initializeRefreshControl {
+    UIRefreshControl *refreshControl = [UIRefreshControl new];
+    [refreshControl addTarget:self
+                       action:@selector(refresh)
+             forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+}
+
+- (void)refresh {
     [self.itemStore reloadItems:^{
         [self.tableView reloadData];
+        [self.refreshControl endRefreshing];
     } failure:^(NSError *error) {
         [self showAlertViewForError:error];
     }];
